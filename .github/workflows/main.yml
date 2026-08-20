@@ -1,0 +1,34 @@
+name: Compilar APK AlgoFin
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Baixar código do repositório
+        uses: actions/checkout@v3
+
+      - name: Configurar Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Instalar Ferramentas do Sistema
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libtool libtool-bin autoconf automake git python3-dev ffmpeg libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev libportmidi-dev libswscale-dev libavformat-dev libavcodec-dev zlib1g-dev libffi-dev unzip zip
+
+      - name: Instalar Buildozer
+        run: pip install buildozer cython==0.29.33 virtualenv
+
+      - name: Gerar o APK
+        run: yes | buildozer -v android debug
+
+      - name: Disponibilizar o APK para Download
+        uses: actions/upload-artifact@v3
+        with:
+          name: AlgoFin-APK
+          path: bin/*.apk
